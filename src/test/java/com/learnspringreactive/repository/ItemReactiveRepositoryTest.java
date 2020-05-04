@@ -55,4 +55,12 @@ public class ItemReactiveRepositoryTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void findItemByDescription(){
+        StepVerifier.create(itemReactiveRepository.findByDescription("HeadPhones").log("findByDescription :" ))
+                .expectSubscription()
+                .expectNextCount(1)
+                .verifyComplete();
+    }
+
 }
