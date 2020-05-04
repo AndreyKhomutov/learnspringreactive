@@ -1,7 +1,6 @@
 package com.learnspringreactive.repository;
 
 import com.learnspringreactive.document.Item;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
@@ -29,14 +29,14 @@ public class ItemReactiveRepositoryTest {
     );
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         itemReactiveRepository.deleteAll()
                 .thenMany(Flux.fromIterable(itemList))
                 .flatMap(itemReactiveRepository::save)
                 .doOnNext((item -> {
                     System.out.println("Inserted item is: " + item);
                 }))
-                .blockLast(); //дождаться завершения чтобы все вставилось
+                .blockLast(); //wait all items will be added only FOR TESTING
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ItemReactiveRepositoryTest {
     }
 
     @Test
-    public void getItemByID(){
+    public void getItemByID() {
         StepVerifier.create(itemReactiveRepository.findById("ABC"))
                 .expectSubscription()
                 .expectNextMatches((item -> item.getDescription().equals("HeadPhones")))
@@ -56,11 +56,24 @@ public class ItemReactiveRepositoryTest {
     }
 
     @Test
-    public void findItemByDescription(){
-        StepVerifier.create(itemReactiveRepository.findByDescription("HeadPhones").log("findByDescription :" ))
+    public void findItemByDescription() {
+        StepVerifier.create(itemReactiveRepository.findByDescription("HeadPhones").log("findByDescription :"))
                 .expectSubscription()
                 .expectNextCount(1)
                 .verifyComplete();
+    }
+
+    @Test
+    public void saveItem() {
+        Item newEntity = new Item(null, "Laptop Sony", 350.00);
+
+        Mono<Item> savedItem = itemReactiveRepository.save(newEntity);
+
+        StepVerifier.create(savedItem)
+                .expectSubscription()
+                .expectNextMatches((item -> item.getDescription().equals("Laptop Sony")))
+                .verifyComplete();
+
     }
 
 }
