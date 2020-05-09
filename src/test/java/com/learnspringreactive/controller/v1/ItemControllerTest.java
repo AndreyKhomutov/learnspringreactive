@@ -9,11 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
@@ -104,6 +106,21 @@ public class ItemControllerTest {
         webTestClient.get().uri(ItemConstansts.ITEM_END_POINT_V1.concat("/{id}"), "ABCD")
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    public void creatItem() {
+        Item item = new Item(null, "printer", 555.00);
+
+        webTestClient.post().uri(ItemConstansts.ITEM_END_POINT_V1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(item), Item.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.id").isNotEmpty()
+                .jsonPath("$.description").isEqualTo("printer")
+                .jsonPath("$.price").isEqualTo(555.00);
     }
 
 }
