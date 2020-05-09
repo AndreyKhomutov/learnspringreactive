@@ -39,7 +39,7 @@ public class ItemControllerTest {
                 new Item(null, "Samsung TV test", 399.66),
                 new Item(null, "LG TV test", 799.66),
                 new Item(null, "Sony TV test", 199.66),
-                new Item(null, "Philips TV test", 899.66)
+                new Item("ABC", "Philips TV test", 899.66)
         );
     }
 
@@ -88,6 +88,22 @@ public class ItemControllerTest {
         StepVerifier.create(itemFlux.log("value from network: "))
                 .expectNextCount(4)
                 .verifyComplete();
+    }
+
+    @Test
+    public void getOneItem() {
+        webTestClient.get().uri(ItemConstansts.ITEM_END_POINT_V1.concat("/{id}"), "ABC")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.price", 899.66);
+    }
+
+    @Test
+    public void getOneItem_notFound() {
+        webTestClient.get().uri(ItemConstansts.ITEM_END_POINT_V1.concat("/{id}"), "ABCD")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
 }
