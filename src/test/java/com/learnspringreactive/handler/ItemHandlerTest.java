@@ -126,4 +126,14 @@ public class ItemHandlerTest {
                 .jsonPath("$.id").isNotEmpty();
     }
 
+    @Test
+    public void deleteItem() {
+        webTestClient.delete().uri(ItemConstansts.ITEM_FUNCTIONAL_END_POINT_V1 + "/ABC")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectStatus().isOk()
+                .expectBody(Void.class);
+    }
+
 }
