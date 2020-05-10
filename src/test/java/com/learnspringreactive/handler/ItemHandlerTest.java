@@ -136,4 +136,19 @@ public class ItemHandlerTest {
                 .expectBody(Void.class);
     }
 
+    @Test
+    public void updateItem() {
+        Item item = new Item(null, "printer", 20.22);
+        webTestClient.put().uri(ItemConstansts.ITEM_FUNCTIONAL_END_POINT_V1 + "/ABC")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(Mono.just(item), Item.class)
+                .exchange()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("ABC")
+                .jsonPath("$.description").isEqualTo("printer")
+                .jsonPath("$.price").isEqualTo(20.22);
+    }
+
 }

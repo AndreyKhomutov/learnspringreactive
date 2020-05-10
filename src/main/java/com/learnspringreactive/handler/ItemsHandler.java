@@ -51,4 +51,24 @@ public class ItemsHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(monoVoid, Void.class);
     }
+
+    public Mono<ServerResponse> updateItem(ServerRequest serverRequest) {
+        String id = serverRequest.pathVariable("id");
+        Mono<Item> updatedItem = serverRequest.bodyToMono(Item.class)
+                .flatMap(itemFromRequest -> {
+                    Mono<Item> itemMono = itemReactiveRepository.findById(id)
+                            .flatMap(currentItem -> {
+                                currentItem.setDescription(itemFromRequest.getDescription());
+                                currentItem.setPrice(itemFromRequest.getPrice());
+                                return itemReactiveRepository.save(currentItem);
+                            });
+                    return itemMono;
+                });
+
+        return updatedItem.flatMap(item ->
+                ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(fromValue(item))
+                        .switchIfEmpty(notFound));
+    }
 }
