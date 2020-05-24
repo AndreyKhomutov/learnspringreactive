@@ -28,7 +28,7 @@ public class ItemDataInitializer implements CommandLineRunner {
                 new Item(null, "Samsung TV", 399.99),
                 new Item(null, "LG TV", 799.99),
                 new Item(null, "Sony TV", 199.99),
-                new Item(null, "Philips TV", 899.99)
+                new Item("ABC", "Philips TV", 899.99)
         );
 
     }
