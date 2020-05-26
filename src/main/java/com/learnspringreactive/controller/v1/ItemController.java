@@ -24,12 +24,12 @@ import static com.learnspringreactive.constants.ItemConstansts.ITEM_END_POINT_V1
 @Slf4j
 public class ItemController {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException exception) {
-        log.error("handleRuntimeException : ", exception);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(exception.getMessage());
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<String> handleRuntimeException(RuntimeException exception) {
+//        log.error("handleRuntimeException : ", exception);
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(exception.getMessage());
+//    }
 
     @Autowired
     ItemReactiveRepository itemReactiveRepository;
