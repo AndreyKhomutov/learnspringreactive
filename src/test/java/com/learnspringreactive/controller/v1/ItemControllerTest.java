@@ -21,6 +21,7 @@ import reactor.test.StepVerifier;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.learnspringreactive.constants.ItemConstansts.ITEM_END_POINT_V1;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
@@ -160,6 +161,16 @@ public class ItemControllerTest {
                 .body(Mono.just(item), Item.class)
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    public void runTimeException() {
+        webTestClient.get().uri(ITEM_END_POINT_V1 + "/runtimeException")
+                .exchange()
+                .expectStatus().is5xxServerError()
+                .expectBody(String.class)
+                .isEqualTo("Runtime exception");
+
     }
 
 }
