@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,13 @@ import static com.learnspringreactive.constants.ItemConstansts.ITEM_END_POINT_V1
 @RestController
 @Slf4j
 public class ItemController {
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException exception) {
+        log.error("handleRuntimeException : ", exception);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exception.getMessage());
+    }
 
     @Autowired
     ItemReactiveRepository itemReactiveRepository;
@@ -62,5 +70,11 @@ public class ItemController {
                 .map(updateItem -> new ResponseEntity<Item>(updateItem, HttpStatus.OK))
                 .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
+    }
+
+    @GetMapping(ITEM_END_POINT_V1 + "/runtimeException")
+    public Flux<Item> runtimeException() {
+        return itemReactiveRepository.findAll()
+                .concatWith(Mono.error(new RuntimeException("Runtime exception")));
     }
 }
